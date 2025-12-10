@@ -1,11 +1,10 @@
-import { initNavigation } from '/stactic/js/admin/navigation.js';
-import { initClientes } from '/stactic/js/admin/clientes.js';
-import { initInventario } from '/stactic/js/admin/inventario.js';
-import { initCuadrillas } from '/stactic/js/admin/cuadrillas.js';
-// Importamos initOrdenes (para listeners) y cargarDatosOrdenes (para datos frescos)
-import { initOrdenes, cargarDatosOrdenes } from '/stactic/js/admin/ordenes.js'; 
-import { initCalendar } from '/stactic/js/admin/calendario.js';
-import { initFacturacion } from '/stactic/js/admin/facturacion.js';
+import { initNavigation } from './navigation.js';
+import { initClientes } from './clientes.js';
+import { initInventario } from './inventario.js';
+import { initCuadrillas } from './cuadrillas.js';
+import { initOrdenes, cargarDatosOrdenes } from './ordenes.js'; 
+import { initCalendar } from './calendario.js';
+import { initFacturacion } from './facturacion.js';
 
 // 1. Configurar Vistas
 const configuracion = {
