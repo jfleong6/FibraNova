@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión ISP</title>
+    <link rel="stylesheet" href="stactic/css/calendario.css">
+    <link rel="stylesheet" href="stactic/css/styles.css">
+
+    <link rel="stylesheet" href="./stactic/css/calendario.css">
+    <link rel="stylesheet" href="./stactic/css/styles.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <nav class="sidebar">
+            <h2>ISP Manager</h2>
+            <ul>
+                <li id="btn-view-clientes" class="active"><i class="fas fa-users"></i> Clientes</li>
+                <li id="btn-view-inventario"><i class="fas fa-boxes"></i> Inventario</li>
+                <li id="btn-view-tecnicos"><i class="fas fa-hard-hat"></i> Cuadrillas / Técnicos</li>
+                <li id="btn-view-ordenes"><i class="fas fa-tools"></i> Órdenes Servicio</li>
+                <li><i class="fas fa-file-invoice-dollar"></i> Facturación</li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <h1 id="page-title">Gestión de Clientes</h1>
+            </header>
+
+            <div id="view-clientes" class="view-section">
+                <section class="card">
+                    <h3><i class="fas fa-user-plus"></i> Nuevo Cliente</h3>
+                    <form id="form-cliente">
+                        <div class="form-grid">
+                            <input type="text" id="nombre" placeholder="Nombre Completo" required>
+                            <input type="text" id="direccion" placeholder="Dirección" required>
+                            <input type="tel" id="telefono" placeholder="Teléfono" required>
+                            <input type="email" id="email" placeholder="Correo">
+                            <select id="plan">
+                                <option value="10MB">Plan 10 MB</option>
+                                <option value="50MB">Plan 50 MB</option>
+                            </select>
+                            <input type="text" id="coordenadas" placeholder="GPS">
+                        </div>
+                        <button type="submit" class="btn-primary">Registrar Cliente</button>
+                    </form>
+                </section>
+
+                <section class="card">
+                    <h3>Base de Clientes</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Plan</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-clientes-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="view-inventario" class="view-section" style="display: none;">
+                <section class="card">
+                    <h3><i class="fas fa-box-open"></i> Registrar Material / Equipo</h3>
+                    <form id="form-inventario">
+                        <div class="form-grid">
+                            <input type="text" id="inv-nombre" placeholder="Nombre del Producto (Ej: Router XPON)"
+                                required>
+                            <select id="inv-tipo">
+                                <option value="equipo">Equipo (Router/Antena)</option>
+                                <option value="material">Material (Cable/Fibra)</option>
+                                <option value="accesorio">Accesorio (Conectores)</option>
+                            </select>
+                            <input type="number" id="inv-stock" placeholder="Cantidad Inicial" required>
+                            <input type="number" id="inv-minimo" placeholder="Stock Mínimo (Alerta)">
+                        </div>
+                        <button type="submit" class="btn-primary">Agregar al Inventario</button>
+                    </form>
+                </section>
+
+                <section class="card">
+                    <h3>Stock Actual</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Tipo</th>
+                                    <th>Stock</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-inventario-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="view-ordenes" class="view-section" style="display: none;">
+
+                <div class="calendar-controls card">
+                    <div class="filter-group">
+                        <label>📅 Semana de:</label>
+                        <input type="date" id="cal-fecha-ref" title="Selecciona un día para ver su semana">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>🚛 Filtrar Cuadrilla:</label>
+                        <select id="cal-filtro-cuadrilla">
+                            <option value="todos">Ver Todas las Cuadrillas</option>
+                        </select>
+                    </div>
+
+                    <button id="btn-nueva-orden" class="btn-primary" onclick="toggleFormulario()">➕ Nueva Orden</button>
+                </div>
+
+                <div id="panel-formulario-orden" class="card"
+                    style="display:none; margin-top:10px; border-left: 5px solid var(--primary);">
+                    <h3>Nueva Instalación</h3>
+                    <form id="form-ordenes">
+                        <div class="form-grid">
+                            <select id="os-cliente" required>
+                                <option>Cargando...</option>
+                            </select>
+                            <input type="text" id="os-direccion" placeholder="Dirección (Auto)" readonly
+                                style="background:#f1f5f9">
+
+                            <select id="os-cuadrilla" required style="background:#f0fdf4">
+                                <option>Cargando...</option>
+                            </select>
+
+                            <select id="os-tipo">
+                                <option value="instalacion">Instalación</option>
+                                <option value="reparacion">Soporte/Reparación</option>
+                            </select>
+
+                            <input type="date" id="os-fecha" required>
+                            <select id="os-hora" required>
+                                <option value="">Seleccione Hora...</option>
+                                <option value="06:00">06:00 AM - 08:00 AM</option>
+                                <option value="08:00">08:00 AM - 10:00 AM</option>
+                                <option value="10:00">10:00 AM - 12:00 PM</option>
+                                <option value="12:00">12:00 PM - 02:00 PM</option>
+                                <option value="14:00">02:00 PM - 04:00 PM</option>
+                                <option value="16:00">04:00 PM - 06:00 PM</option>
+                                <option value="18:00">06:00 PM - 08:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-top:10px; text-align:right;">
+                            <span id="msg-disponibilidad" style="margin-right:10px; font-weight:bold;"></span>
+                            <button type="button" onclick="toggleFormulario()"
+                                style="background:#ccc; border:none; padding:8px;">Cancelar</button>
+                            <button type="submit" class="btn-primary">Guardar Orden</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="calendar-wrapper card" style="margin-top:20px; overflow-x: auto;">
+                    <div class="calendar-header" id="calendar-header">
+                    </div>
+
+                    <div class="calendar-grid" id="calendar-grid">
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-tecnicos" class="view-section" style="display: none;">
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+
+                    <section class="card">
+                        <h3><i class="fas fa-truck"></i> 1. Crear Cuadrilla</h3>
+                        <form id="form-crear-cuadrilla">
+                            <div class="form-grid" style="grid-template-columns: 1fr;">
+                                <input type="text" id="team-nombre" placeholder="Nombre (Ej: Móvil 01)" required>
+                                <input type="text" id="team-placa" placeholder="Placa Vehículo">
+                                <button type="submit" class="btn-primary" style="width:100%">Guardar Cuadrilla</button>
+                            </div>
+                        </form>
+                        <hr>
+                        <h4>Cuadrillas Activas:</h4>
+                        <ul id="lista-cuadrillas-simple" style="padding-left:20px; margin-top:10px;">
+                        </ul>
+                    </section>
+
+                    <section class="card">
+                        <h3><i class="fas fa-user-hard-hat"></i> 2. Registrar Técnico</h3>
+                        <form id="form-agregar-tecnico">
+                            <div class="form-grid">
+                                <select id="tec-cuadrilla" required
+                                    style="background-color: #f0f9ff; border-color: #bae6fd;">
+                                    <option value="">Cargando cuadrillas...</option>
+                                </select>
+
+                                <select id="tec-rol" required>
+                                    <option value="lider">Líder de Cuadrilla</option>
+                                    <option value="auxiliar">Auxiliar</option>
+                                    <option value="conductor">Conductor</option>
+                                </select>
+
+                                <input type="text" id="tec-nombre" placeholder="Nombre Completo" required>
+                                <input type="text" id="tec-documento" placeholder="Cédula / DNI" required>
+                                <input type="tel" id="tec-telefono" placeholder="Teléfono / Celular">
+                                <input type="email" id="tec-email" placeholder="Correo Electrónico">
+                                <input type="text" id="tec-contrato" placeholder="No. Contrato / Tipo">
+                            </div>
+                            <button type="submit" class="btn-primary">Guardar Técnico</button>
+                        </form>
+                    </section>
+                </div>
+
+                <section class="card">
+                    <h3>Nómina de Técnicos e Instaladores</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Rol / Cargo</th>
+                                    <th>Cuadrilla Asignada</th>
+                                    <th>Contacto (Tel/Email)</th>
+                                    <th>Contrato / Doc</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-tecnicos-detallada">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- <script type="module" src="/stactic/js/admin/main.js"></script> -->
+    <script type="module" src="stactic/js/admin/main.js"></script>
+
+</body>
+
+</html>
